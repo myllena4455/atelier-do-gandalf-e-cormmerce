@@ -1,6 +1,6 @@
 from django.urls import path
+from django.shortcuts import render # ADICIONE ESTA LINHA
 from . import views
-
 urlpatterns = [
     # Página inicial (Catálogo)
     path('', views.home, name='home'),
