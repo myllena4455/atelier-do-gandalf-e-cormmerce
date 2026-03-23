@@ -1,0 +1,12 @@
+{% for produto in produtos %}
+<div class="card-produto">
+    {% if produto.imagens.first %}
+        <img src="{{ produto.imagens.first.imagem.url }}" class="img-principal">
+    {% else %}
+        <img src="/static/img/placeholder.png" class="img-principal">
+    {% endif %}
+    <h3>{{ produto.nome }}</h3>
+    <p>R$ {{ produto.preco_base }}</p>
+    <button class="btn-acao" onclick="abrirChat('{{ produto.id }}')">Personalizar</button>
+</div>
+{% endfor %}

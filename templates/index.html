@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier do Gandalf</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="header-top">
+        <button class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+        <div class="search-bar">
+            <input type="text" id="barra-pesquisa" placeholder="🔍 Pesquisar produtos..." onkeyup="pesquisarProdutos()">
+        </div>
+        <div class="notificacao-container">
+            <button class="btn-notificacao">🔔<span id="badge-notificacoes" class="badge" style="display:none;">0</span></button>
+        </div>
+    </div>
+
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="logo-area">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="logo-img">
+            <h3>Atelier do Gandalf</h3>
+        </div>
+        <ul>
+            <li><a href="#" onclick="trocarAba('Catalogo')" class="active">🛒 Catálogo</a></li>
+            <li><a href="#" onclick="trocarAba('Carrinho')">🛍️ Meu Carrinho</a></li>
+            
+            {% if user.is_authenticated %}
+                <li><a href="#" onclick="trocarAba('Perfil')">👤 Perfil / Conta</a></li>
+                <li><a href="#" onclick="trocarAba('MeusChats')">💬 Meus Chats</a></li>
+                
+                {% if user.is_staff %}
+                    <li style="background: #e67e22; border-radius: 5px; margin-top: 10px;">
+                        <a href="#" onclick="trocarAba('Gestao')">⚙️ Gestão de Produtos</a>
+                    </li>
+                    <li style="background: #e67e22; border-radius: 5px;">
+                        <a href="#" onclick="trocarAba('ChatADM')">💬 Chat ADM (Clientes)</a>
+                    </li>
+                {% endif %}
+                <li><a href="/logout">🚪 Sair</a></li>
+            {% else %}
+                <li><a href="/login">👤 Entrar / Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main class="conteudo-principal">
+        
+        <section id="Catalogo" class="aba-conteudo active">
+            <div id="grid-produtos" class="grid-itens">
+                {% for produto in produtos %}
+                <div class="card-produto">
+                    {% if produto.imagens.first %}
+                        <img src="{{ produto.imagens.first.imagem.url }}" class="img-principal">
+                    {% else %}
+                        <img src="{% static 'img/placeholder.png' %}" class="img-principal">
+                    {% endif %}
+                    <h3>{{ produto.nome }}</h3>
+                    <p>R$ {{ produto.preco_base }}</p>
+                    <button class="btn-acao" onclick="abrirChat('{{ produto.id }}')">Personalizar</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="Carrinho" class="aba-conteudo" style="display:none;">
+            <div class="card-painel">
+                <div id="itens-carrinho"></div>
+                <div class="frete-area">
+                    <h4>🚚 Calcular Frete</h4>
+                    <input type="text" id="cep-frete" placeholder="Seu CEP">
+                    <button onclick="buscarEndereco()">Calcular</button>
+                </div>
+                <h2 id="total-valor">Total: R$ 0,00</h2>
+                <button class="btn-acao btn-wpp">🚀 Finalizar Pedido</button>
+            </div>
+        </section>
+
+        <section id="Perfil" class="aba-conteudo" style="display:none;">
+            <div class="card-painel">
+                <div id="foto-perfil" style="width:80px; height:80px; background:#0d334d; border-radius:50%; margin:auto;">📷</div>
+                <form method="POST" action="{% url 'editar_perfil' %}">
+                    {% csrf_token %}
+                    <input type="text" name="cpf" value="{{ user.perfil.cpf|default:'' }}" placeholder="CPF">
+                    <input type="text" name="telefone" value="{{ user.perfil.telefone|default:'' }}" placeholder="Telefone">
+                    <textarea name="endereco" placeholder="Endereço de Entrega">{{ user.perfil.endereco|default:'' }}</textarea>
+                    <button type="submit" class="btn-acao">💾 Salvar Meus Dados</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="Gestao" class="aba-conteudo" style="display:none;">
+            <div class="card-painel">
+                <h3>Gerenciar Catálogo</h3>
+                <input type="text" placeholder="Nome do Novo Produto">
+                <button class="btn-acao">✅ Adicionar ao Catálogo</button>
+                
+                <div id="gestao-list" style="margin-top: 20px;">
+                    {% for p in produtos %}
+                    <div style="display:flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #1b4f72;">
+                        <span>{{ p.nome }}</span>
+                        <div>
+                            <button onclick="editar('{{ p.id }}')">✏️</button>
+                            <button onclick="remover('{{ p.id }}')" style="color:red">🗑️</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section id="ChatADM" class="aba-conteudo" style="display:none;">
+            <div class="card-painel">
+                <h3>Clientes Aguardando Atendimento</h3>
+                <div id="lista-chat-adm">
+                    <p>Nenhuma mensagem nova.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{% static 'js/core.js' %}"></script>
+    <script src="{% static 'js/chat.js' %}"></script>
+    <script src="{% static 'js/frete.js' %}"></script>
+
+    <script>
+        function trocarAba(idAba) {
+            document.querySelectorAll('.aba-conteudo').forEach(a => a.style.display = 'none');
+            document.getElementById(idAba).style.display = 'block';
+            
+            // Remove o 'active' de todos e coloca no clicado
+            document.querySelectorAll('.aba-link').forEach(link => link.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
