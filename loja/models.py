@@ -1,20 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Perfil do Cliente (Endereço, CPF e Telefone)
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     foto = models.ImageField(upload_to='perfis/', blank=True, null=True)
     cpf = models.CharField(max_length=14, blank=True)
     telefone = models.CharField(max_length=15, blank=True)
     endereco = models.TextField(blank=True)
-    cep = models.CharField(max_length=9, blank=True)
+    cep = models.CharField(max_length=9, blank=True, null=True)
     is_adm = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
 
-# Produto do Catálogo
 class Produto(models.Model):
     nome = models.CharField(max_length=200)
     descricao = models.TextField()
@@ -25,13 +23,11 @@ class Produto(models.Model):
         return self.nome
 
 # Até 5 fotos por produto
-class ImagemProduto(models.Model):
     produto = models.ForeignKey(Produto, related_name='imagens', on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='produtos/')
 
 # O "Coração" da venda personalizada
 class Pedido(models.Model):
-    STATUS_CHOICES = [
         ('negociacao', 'Em Negociação'),
         ('liberado', 'Liberado para Carrinho'),
         ('pago', 'Pago'),

@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta ADM - Atelier do Gandalf</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <style>
+        .form-adm { background: var(--azul); padding: 30px; border-radius: 8px; margin: 20px auto; max-width: 600px; }
+        .form-adm input { width: 100%; margin: 10px 0; padding: 10px; border: 1px solid rgba(91, 207, 140, 0.3); border-radius: 4px; background: rgba(255,255,255,0.05); color: white; }
+        .form-adm input:focus { outline: none; border-color: var(--verde); }
+        .form-adm input::placeholder { color: rgba(255,255,255,0.4); }
+    </style>
+</head>
+<body>
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        <h1>Criar Nova Conta ADM</h1>
+        <a href="{% url 'gerenciar_adms' %}" class="btn-acao" style="margin-bottom: 20px; display: inline-block;">← Voltar</a>
+        
+        <div class="form-adm">
+            <form method="post">
+                {% csrf_token %}
+                <h3>Informações da Conta</h3>
+                <input type="text" name="username" placeholder="Nome de usuário" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Senha" required>
+                <input type="password" name="confirm_password" placeholder="Confirmar senha" required>
+                
+                <h3 style="margin-top: 20px;">Informações Pessoais</h3>
+                <input type="text" name="cpf" placeholder="CPF (opcional)">
+                <input type="text" name="telefone" placeholder="Telefone (opcional)">
+                <input type="text" name="endereco" placeholder="Endereço (opcional)">
+                <input type="text" name="cep" placeholder="CEP (opcional)">
+                
+                <button type="submit" class="btn-acao" style="margin-top: 20px; width: 100%;">Criar Conta ADM</button>
+            </form>
+        </div>
+        
+        <div style="background: rgba(13, 51, 77, 0.8); padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <h4>⚠️ Importante:</h4>
+            <ul>
+                <li>A nova conta terá acesso total ao sistema administrativo</li>
+                <li>Poderá gerenciar catálogo, produtos e ver todas as conversas</li>
+                <li>Use uma senha forte e segura</li>
+                <li>O email deve ser único no sistema</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro no Pagamento</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body>
+    <main class="conteudo-principal">
+        <section class="aba-conteudo active">
+            <div class="card-painel">
+                <h1>Ocorreu um erro no pagamento</h1>
+                <p>Por favor, tente novamente ou entre em contato com o suporte.</p>
+                <a class="btn-acao" href="{% url 'home' %}">Voltar ao catálogo</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

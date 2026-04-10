@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Atelier do Gandalf</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body>
+    <main class="conteudo-principal">
+        <section class="aba-conteudo active">
+            <div class="card-painel">
+                <h1>Meu Perfil</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn-acao">Salvar</button>
+                </form>
+                <p><a href="{% url 'home' %}">Voltar ao catálogo</a></p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

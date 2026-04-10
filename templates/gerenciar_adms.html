@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar ADMs - Atelier do Gandalf</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <style>
+        .adm-list { background: var(--azul); padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .adm-item { background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .adm-info h4 { margin: 0; color: var(--verde); }
+        .adm-info p { margin: 5px 0; color: rgba(255,255,255,0.7); }
+        .adm-actions { display: flex; gap: 10px; }
+        .btn-small { padding: 8px 15px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+        <h1>Gerenciar Contas ADM</h1>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="{% url 'gerenciar_catalogo' %}" class="btn-acao">Gerenciar Catálogo</a>
+            <a href="{% url 'criar_conta_adm' %}" class="btn-acao">Criar Nova Conta ADM</a>
+            <a href="{% url 'index' %}" class="btn-acao">Voltar ao Site</a>
+        </div>
+        
+        <div class="adm-list">
+            <h3>Contas ADM Ativas</h3>
+            {% for adm in adms %}
+            <div class="adm-item">
+                <div class="adm-info">
+                    <h4>{{ adm.username }}</h4>
+                    <p><strong>Email:</strong> {{ adm.email }}</p>
+                    <p><strong>Último login:</strong> {{ adm.last_login|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Data de criação:</strong> {{ adm.date_joined|date:"d/m/Y" }}</p>
+                    {% if adm.perfil %}
+                    <p><strong>CPF:</strong> {{ adm.perfil.cpf|default:"Não informado" }}</p>
+                    <p><strong>Telefone:</strong> {{ adm.perfil.telefone|default:"Não informado" }}</p>
+                    {% endif %}
+                </div>
+                <div class="adm-actions">
+                    <form method="post" action="{% url 'remover_adm' adm.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-acao btn-small" style="background: #dc3545;" onclick="return confirm('Tem certeza que deseja remover esta conta ADM?')">Remover</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: rgba(255,255,255,0.7);">Nenhuma conta ADM encontrada.</p>
+            {% endfor %}
+        </div>
+        
+        <div style="background: rgba(13, 51, 77, 0.8); padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <h4>📊 Estatísticas do Sistema</h4>
+            <p><strong>Total de ADMs:</strong> {{ adms|length }}</p>
+            <p><strong>Produtos no catálogo:</strong> {{ total_produtos }}</p>
+            <p><strong>Mensagens no chat hoje:</strong> {{ mensagens_hoje }}</p>
+        </div>
+    </div>
+</body>
+</html>

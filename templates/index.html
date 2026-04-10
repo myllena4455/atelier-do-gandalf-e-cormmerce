@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-user-is-staff="{% if user.is_staff %}true{% else %}false{% endif %}">
 
     <div class="header-top">
         <button class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></button>
@@ -41,9 +41,9 @@
                         <a href="#" onclick="trocarAba('ChatADM')">💬 Chat ADM (Clientes)</a>
                     </li>
                 {% endif %}
-                <li><a href="/logout">🚪 Sair</a></li>
+                <li><a href="{% url 'logout' %}">🚪 Sair</a></li>
             {% else %}
-                <li><a href="/login">👤 Entrar / Login</a></li>
+                <li><a href="{% url 'login' %}">👤 Entrar / Login</a></li>
             {% endif %}
         </ul>
     </nav>
@@ -85,9 +85,9 @@
                 <div id="foto-perfil" style="width:80px; height:80px; background:#0d334d; border-radius:50%; margin:auto;">📷</div>
                 <form method="POST" action="{% url 'editar_perfil' %}">
                     {% csrf_token %}
-                    <input type="text" name="cpf" value="{{ user.perfil.cpf|default:'' }}" placeholder="CPF">
-                    <input type="text" name="telefone" value="{{ user.perfil.telefone|default:'' }}" placeholder="Telefone">
-                    <textarea name="endereco" placeholder="Endereço de Entrega">{{ user.perfil.endereco|default:'' }}</textarea>
+                    <input type="text" name="cpf" value="{{ perfil.cpf|default:'' }}" placeholder="CPF">
+                    <input type="text" name="telefone" value="{{ perfil.telefone|default:'' }}" placeholder="Telefone">
+                    <textarea name="endereco" placeholder="Endereço de Entrega">{{ perfil.endereco|default:'' }}</textarea>
                     <button type="submit" class="btn-acao">💾 Salvar Meus Dados</button>
                 </form>
             </div>

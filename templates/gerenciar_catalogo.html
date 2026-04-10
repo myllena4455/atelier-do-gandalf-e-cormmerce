@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Catálogo - Atelier do Gandalf</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <style>
+        .form-produto { background: var(--azul); padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .form-produto input, .form-produto textarea { width: 100%; margin: 10px 0; padding: 8px; }
+        .produto-item { background: rgba(13, 51, 77, 0.8); padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .produto-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; }
+        .btn-editar { background: #f39c12; color: black; }
+        .btn-remover { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h1>Gerenciar Catálogo</h1>
+        <a href="{% url 'home' %}" class="btn-acao" style="margin-bottom: 20px; display: inline-block;">← Voltar ao Catálogo</a>
+        
+    
+        <div class="form-produto">
+            <h3>Adicionar Novo Produto</h3>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="nome" placeholder="Nome do produto" required>
+                <textarea name="descricao" placeholder="Descrição do produto" rows="3"></textarea>
+                <input type="number" name="preco" placeholder="Preço base (R$)" step="0.01" required>
+                <input type="file" name="imagens" multiple accept="image/*" required>
+                <small>Máximo 5 imagens por produto</small><br><br>
+                <button type="submit" name="adicionar_produto" class="btn-acao">Adicionar Produto</button>
+            </form>
+        </div>
+        
+    
+        <h3>Produtos no Catálogo</h3>
+        {% for produto in produtos %}
+        <div class="produto-item" data-id="{{ produto.id }}" data-nome="{{ produto.nome|escapejs }}" data-desc="{{ produto.descricao|escapejs }}" data-preco="{{ produto.preco_base }}" data-disponivel="{% if produto.disponivel %}true{% else %}false{% endif %}">
+            <div style="display: flex; gap: 20px;">
+                <div>
+                    {% if produto.imagens.first %}
+                        <img src="{{ produto.imagens.first.imagem.url }}" alt="{{ produto.nome }}">
+                    {% else %}
+                        <img src="{% static 'img/placeholder.png' %}" alt="Sem imagem">
+                    {% endif %}
+                </div>
+                <div style="flex: 1;">
+                    <h4>{{ produto.nome }}</h4>
+                    <p>R$ {{ produto.preco_base }}</p>
+                    <p>{{ produto.descricao }}</p>
+                    <p><strong>Status:</strong> {% if produto.disponivel %}Disponível{% else %}Indisponível{% endif %}</p>
+                    <p><strong>Imagens:</strong> {{ produto.imagens.count }}/5</p>
+                </div>
+                <div>
+                    <button onclick="editarProduto(this)" class="btn-acao btn-editar">Editar</button>
+                    <button onclick="removerProduto(this)" class="btn-acao btn-remover">Remover</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal de edição -->
+    <div id="modal-editar" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--azul); padding: 20px; border-radius: 8px; width: 90%; max-width: 500px;">
+            <h3>Editar Produto</h3>
+            <form id="form-editar" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" id="edit-produto-id">
+                <input type="text" name="nome" id="edit-nome" placeholder="Nome" required>
+                <textarea name="descricao" id="edit-descricao" placeholder="Descrição" rows="3"></textarea>
+                <input type="number" name="preco" id="edit-preco" placeholder="Preço" step="0.01" required>
+                <label><input type="checkbox" name="disponivel" id="edit-disponivel"> Disponível</label>
+                <input type="file" name="novas_imagens" multiple accept="image/*">
+                <small>Adicionar mais imagens (máx. 5 total)</small><br><br>
+                <button type="submit" name="editar_produto" class="btn-acao">Salvar Alterações</button>
+                <button type="button" onclick="fecharModal()" class="btn-acao" style="background: #95a5a6;">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function editarProduto(button) {
+            const item = button.closest('.produto-item');
+            const produtoId = item.dataset.id;
+            const nome = item.dataset.nome;
+            const descricao = item.dataset.desc;
+            const preco = item.dataset.preco;
+            const disponivel = item.dataset.disponivel === 'true';
+            
+            document.getElementById('edit-produto-id').value = produtoId;
+            document.getElementById('edit-nome').value = nome;
+            document.getElementById('edit-descricao').value = descricao;
+            document.getElementById('edit-preco').value = preco;
+            document.getElementById('edit-disponivel').checked = disponivel;
+            
+            document.getElementById('modal-editar').style.display = 'block';
+        }
+        
+        function removerProduto(button) {
+            const item = button.closest('.produto-item');
+            const produtoId = item.dataset.id;
+            const nome = item.dataset.nome;
+            
+            if (confirm(`Tem certeza que deseja remover "${nome}"?`)) {
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.innerHTML = `
+                    {% csrf_token %}
+                    <input type="hidden" name="produto_id" value="${produtoId}">
+                    <input type="hidden" name="remover_produto" value="1">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function fecharModal() {
+            document.getElementById('modal-editar').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
