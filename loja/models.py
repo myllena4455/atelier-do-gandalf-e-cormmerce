@@ -23,11 +23,16 @@ class Produto(models.Model):
         return self.nome
 
 # Até 5 fotos por produto
+class ImagemProduto(models.Model):
     produto = models.ForeignKey(Produto, related_name='imagens', on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='produtos/')
 
+    def __str__(self):
+        return f"Imagem de {self.produto.nome}"
+
 # O "Coração" da venda personalizada
 class Pedido(models.Model):
+    STATUS_CHOICES = [
         ('negociacao', 'Em Negociação'),
         ('liberado', 'Liberado para Carrinho'),
         ('pago', 'Pago'),

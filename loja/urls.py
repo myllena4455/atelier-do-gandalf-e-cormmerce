@@ -21,7 +21,7 @@ urlpatterns = [
     
     # Atualização do catálogo via AJAX
     path('catalogo-atualizado/', views.catalogo_atualizado, name='catalogo_atualizado'),
-    alogo/', views.gerenciar_catalogo, name='gerenciar_catalogo'),
+    path('gerenciar-catalogo/', views.gerenciar_catalogo, name='gerenciar_catalogo'),
     path('criar-conta-adm/', views.criar_conta_adm, name='criar_conta_adm'),
     path('gerenciar-adms/', views.gerenciar_adms, name='gerenciar_adms'),
     path('remover-adm/<int:adm_id>/', views.remover_adm, name='remover_adm'),

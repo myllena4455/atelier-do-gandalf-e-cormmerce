@@ -18,7 +18,6 @@ class CustomUserAdmin(UserAdmin):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        # Mostrar primeiro os ADMs
         return qs.order_by('-is_staff', 'username')
 
 admin.site.unregister(User)

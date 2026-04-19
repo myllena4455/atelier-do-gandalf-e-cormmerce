@@ -24,7 +24,6 @@ class Command(BaseCommand):
             username = f'adm{i}'
             email = f'adm{i}@atelier.com'
             
-            # Criar usuário ADM
             user, created = User.objects.get_or_create(
                 username=username,
                 defaults={
@@ -35,17 +34,16 @@ class Command(BaseCommand):
             )
             
             if created:
-                user.set_password('123456')  # Senha simples para teste
+                user.set_password('123456')
                 user.save()
                 
-                # Criar perfil
                 Perfil.objects.get_or_create(
                     user=user,
                     defaults={
                         'cpf': f'000.000.000-0{i}',
                         'telefone': f'(81) 99999-000{i}',
                         'endereco': f'Endereço ADM {i}',
-                        'cep': '50000-000'  # Campo obrigatório
+                        'cep': '50000-000'
                     }
                 )
                 
